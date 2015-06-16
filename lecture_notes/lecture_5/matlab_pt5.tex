@@ -1,0 +1,224 @@
+\documentclass{beamer}
+
+\renewcommand\sfdefault{phv}
+\renewcommand\familydefault{\sfdefault}
+\usetheme{default}
+\usepackage{color}
+\useoutertheme{default}
+\usepackage{texnansi}
+\usepackage{color}
+\usepackage{marvosym}
+\definecolor{bottomcolour}{rgb}{0.32,0.3,0.38}
+\definecolor{middlecolour}{rgb}{0.08,0.08,0.16}
+\setbeamerfont{title}{size=\Huge}
+\setbeamercolor{structure}{fg=gray}
+\setbeamertemplate{frametitle}[default]%[center]
+\setbeamercolor{normal text}{bg=black, fg=white}
+\setbeamertemplate{background canvas}[vertical shading]
+[bottom=bottomcolour, middle=middlecolour, top=black]
+\setbeamertemplate{items}[circle]
+\setbeamerfont{frametitle}{size=\huge}
+\setbeamertemplate{navigation symbols}{} %no nav symbols
+
+
+\usepackage{amsmath,  amsfonts, amsthm, graphicx, subfigure}
+%\usepackage{biblatex}
+ \usepackage{fancybox, ulem}
+ \usepackage{mathtools}
+ \usepackage{tabularx}
+ \usepackage{tikz}
+ \usepackage{movie15}
+ %\bibliography{pumping_paper}
+\newcommand{\p}{\partial}
+\newcommand{\f}{\frac}
+\newcommand{\B}{\textbf}
+\newcommand{\I}{\textit}
+\newcommand{\tab}{\hspace{10mm}}
+
+ % \usetheme{Singapore}
+% \usetheme{Warsaw}
+  \setbeamertemplate{navigation symbols}{}
+\title{Lecture 5}
+\author{Austin Baird\\UNC Department of Mathematics\\UNC Department of Biology}
+\date{\today} 
+
+\begin{document}
+\frame{\titlepage}
+
+\begin{frame}
+\frametitle{Summary}
+\begin{itemize}
+
+\item Last week we learned: 
+\begin{itemize}
+\item Numerical integration.
+\item Rectangle rule.
+\item Trapizoid rule
+\item Review of matlab solvers used in solving non-linear ODEs
+\end{itemize}
+\item Today we will: 
+\begin{itemize}
+\item Runge-Kutta.
+\item Theory and implementation 
+\item Error analysis of ode solvers
+\end{itemize}
+\end{itemize}
+
+\end{frame}
+
+%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+\begin{frame}
+\frametitle{Problem formulation}
+
+We want to be able to evaluate equations of the form: 
+
+\begin{align*}
+\frac{dy}{dt} &= f(t,y)\\
+y(t_0) &= y_0
+\end{align*}
+
+\ \\
+
+Here $t_0$ is initial time, and $y_0$ is the initial value. We've done this once before with eulers method, but is that good enough? 
+\end{frame}
+
+
+%%%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+\begin{frame}
+\frametitle{Error and Doing a Bit Better}
+
+Recall from our previous homework that Eulers method is a first order method: $err = \mathcal{M}h$. Or that error is a linear function of step size $ h=\Delta t$. Also recall 
+Eulers method: 
+
+\begin{align*}
+y(t_{n+1})& \approx y_{n} + hf(t_n,y_n)\\
+&or\\
+y_{n+1} &= y_{n} + hf(t_n,y_n)
+\end{align*}
+
+here we approximate the solution, $y(t_{n+1})$ of the n+1 time step with previously computed data: $y_n$ and the derivative: $f(t_n,y_n)$ 
+
+
+\end{frame}
+
+
+%%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+\begin{frame}
+\frametitle{Error and Doing a Bit Better}
+
+Because Euler's method is a first order method, if we want four digits of accuracy, then we have to select a time step: 
+\begin{align*}
+\Delta t = 0.0001 
+\end{align*}
+
+Say we want to compute the solution of ten seconds: 
+
+\begin{align*} 
+N_{timesteps} = \frac{10}{0.0001} = 100000
+\end{align*}
+
+One hundred thousand time steps! Seems a bit steep and can take a significant amount of time to compute in practice. 
+\end{frame}
+%%%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+
+\begin{frame}
+\frametitle{Error and Doing a Bit Better} 
+
+Now say that we have a second order method: 
+
+\begin{align*}
+err = \mathcal{M}h^2
+\end{align*}
+
+Then we can compute the time step needed to get four digits of accuracy: 
+
+\begin{align*}
+\sqrt{0.0001} = 0.01 = \Delta t
+\end{align*}
+
+We can now see that it will only take 1000 times steps to compute the solution over 10 seconds. So much better!! 
+ 
+\end{frame}
+%%%%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+%
+\begin{frame}
+\frametitle{log-log plots} 
+
+We can now extract the order of a given method by doing the following: \\
+\ \\
+If we have the error = $err$ and the time step: $\Delta t$, then we have the following relation (which can be seen in graph form): 
+
+\begin{align*}
+err = \mathcal{M}h^2
+\end{align*}
+
+This means that the error is a quadratic function of time step $h = \Delta t$. We can also take the log, $ln$, of the data and get: 
+\begin{align*}
+log(err) = 2log(h) + log(\mathcal{M})
+\end{align*}
+
+This shows now that we have a linear function with slope 2. If we do this to our data and take the slope of the line, then we can get the order of the method! 
+
+ 
+\end{frame}
+
+%%%%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+
+
+\begin{frame}
+\frametitle{Example of a Second Order Method}
+
+Now we want to use the value of the derivative $f(t,y)$ at an intermediate time step: $\frac{t}{2}$. We want to use the value of the derivative between $t_n$ and $t_{n+1}$. We will first introduce the \textcolor{cyan}{Midpoint Method} or also known as \textcolor{cyan}{Two step Runge-Kutta}: 
+
+\begin{align*}
+k_1 &= hf(t_n,y_n)\\
+k_2 &= hf(t_n + \frac{1}{2}h, y_n + \frac{1}{2}k_1)\\
+y_{n+1} &= y_n + k_2
+\end{align*}
+
+This is whats known as a \textcolor{cyan}{Multi-step Method} and it gives us second order accuracy (We need to show this numerically!). 
+
+\end{frame}
+%%%%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+%%
+%%%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+\begin{frame}
+\frametitle{Matlab Implimentation}
+
+What do we need to compute this? In general all the tools we used in Eulers method apply here, with one additional computational step. 
+
+\begin{itemize}
+\item Discretize the domain, $t = [t_0,t_1,\hdots,t_n]$
+\item Use the function: $f(t,y(t))$ 
+\item First we compute $k_1$ 
+\item $\gg k_1 =  hf(t_n,y_n)$
+\item Now use this value in the next computational step: 
+\item $\gg k_2 = hf(t_n + \frac{1}{2}h, y_n + \frac{1}{2}k_1)$
+\item Then we can compute our  new approximation: 
+\item $\gg y_{n+1} = y_n + k_2$
+\item Repeat at each time step! 
+\end{itemize}
+
+
+\end{frame}
+%%%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+
+\begin{frame}
+\frametitle{Homework 5} 
+We know that Euler method is 1st order, we want to verify that this new method is second order. 
+\begin{itemize}
+\item Alter your Euler code so that it deals with time derivatives (this should be just changing x's to t's) 
+\item Write a function which will solve $ \frac{dy}{dt} = f(t,y)$ Using the two step Runge-Kutta method (introduced in these lecture notes).
+\item Write a separate script which does the following: 
+\begin{itemize}
+\item A plot which graphs error v $\Delta t$. 
+\item A log-log  plot of $ err$ v $\Delta t$. ( you can google log-log plot matlab, or you can just take $\gg ln(err), \gg ln(\Delta t)$, and graph.
+\item A print out of the slope of the line that you just graphed (this should be close to 2, second order method!)
+\item A plot of the graph of (eulers method - midpoint method) v time
+\item A print out of the max error over the entire time simulation between the two methods. (i.e. max(euler-midpoint) )
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+%
+\end{document}

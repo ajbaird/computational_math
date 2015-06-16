@@ -1,0 +1,204 @@
+\documentclass{beamer}
+
+\renewcommand\sfdefault{phv}
+\renewcommand\familydefault{\sfdefault}
+\usetheme{default}
+\usepackage{color}
+\useoutertheme{default}
+\usepackage{texnansi}
+\usepackage{color}
+\usepackage{marvosym}
+\definecolor{bottomcolour}{rgb}{0.32,0.3,0.38}
+\definecolor{middlecolour}{rgb}{0.08,0.08,0.16}
+\setbeamerfont{title}{size=\Huge}
+\setbeamercolor{structure}{fg=gray}
+\setbeamertemplate{frametitle}[default]%[center]
+\setbeamercolor{normal text}{bg=black, fg=white}
+\setbeamertemplate{background canvas}[vertical shading]
+[bottom=bottomcolour, middle=middlecolour, top=black]
+\setbeamertemplate{items}[circle]
+\setbeamerfont{frametitle}{size=\huge}
+\setbeamertemplate{navigation symbols}{} %no nav symbols
+
+
+\usepackage{amsmath,  amsfonts, amsthm, graphicx, subfigure}
+%\usepackage{biblatex}
+ \usepackage{fancybox, ulem}
+ \usepackage{mathtools}
+ \usepackage{tabularx}
+ \usepackage{tikz}
+ \usepackage{movie15}
+ %\bibliography{pumping_paper}
+\newcommand{\p}{\partial}
+\newcommand{\f}{\frac}
+\newcommand{\B}{\textbf}
+\newcommand{\I}{\textit}
+\newcommand{\tab}{\hspace{10mm}}
+
+ % \usetheme{Singapore}
+% \usetheme{Warsaw}
+  \setbeamertemplate{navigation symbols}{}
+\title{ Matlab Notes Part 4}
+\author{Austin Baird\\UNC Department of Mathematics\\UNC Department of Biology}
+\date{\today} 
+
+\begin{document}
+\frame{\titlepage}
+
+\begin{frame}
+\frametitle{Summary}
+\begin{itemize}
+
+\item Last week we learned: 
+\begin{itemize}
+\item Matlab functions. 
+\item Upper triangular matrices.
+\item Numerical differentiation.
+\item Using built in Matlab functions to solves systems of ODEs. 
+\end{itemize}
+\item Today we will: 
+\begin{itemize}
+\item Numerical integration.
+\item Rectangle rule and trapezoid rule. 
+\item Error of numerical integration, examples of unsolvable integrals. 
+\end{itemize}
+\end{itemize}
+
+\end{frame}
+
+%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+\begin{frame}
+\frametitle{Problem formulation}
+
+We want to be able to evaluate integrals of the form: 
+
+\begin{align*}
+\mathcal{I}(x) = \int^{b}_{a} f(x) dx 
+\end{align*}
+
+\ \\
+In general this is useful when you can't evaluate the integral given. We want to be able to evaluate this accurately using numerical techniques. 
+
+\end{frame}
+
+
+%%%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+\begin{frame}
+\frametitle{Idea}
+
+To numerically approximate this we can simply take the area of rectangles under the curve. To do this we subdivide the interval into n partitions: 
+
+\begin{align*}
+h&=\frac{b-a}{n}\\
+f&\approx f(x_j^{\ast})
+\end{align*}
+
+Here $x_j^\ast $ is the midpoint of the jth subinterval. We can then write the area of the jth rectangle as: 
+
+\begin{align*}
+A_j = f(x_j^\ast) h 
+\end{align*}
+Remember the area of a rectangle is just length times height. 
+\end{frame}
+
+
+%%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+\begin{frame}
+\frametitle{Rectangle Rule}
+
+We can now write out the approximation for rectangle rule: 
+
+\begin{align*}
+\mathcal{I}(x)= \int^{b}_{a}f(x)ds\approx h[f(x_1^{\ast}) + \hdots + f(x_n^{\ast})]
+\end{align*}
+
+for $h=\frac{b-a}{n}$. Lets try and use it! 
+
+\end{frame}
+%%%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+
+\begin{frame}
+\frametitle{Programming Rectangle Rule in Matlab} 
+
+We first need to decretive the x domain: \\
+
+$\gg$ x = a:h:b\\
+
+Then we need to have the integrand: $f(x)$ and evaluate it at the midpoint of each interval: \\
+\ \\
+$\gg $ for i = 1: size(x), \\
+\tab midpoint = $\frac{x(i)+x(i+1)}{2}$\\
+\tab sum = sum + f(midpoint)\\
+end \\
+\ \\
+
+We then want to multiply by h: \\
+\ \\
+
+rec = sum*h \\
+ \ \\
+ Now test this with an integral you know! 
+ 
+\end{frame}
+%%%%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+%
+\begin{frame}
+\frametitle{Trapezoid Rule}
+
+We now want a more accurate integration method, \textcolor{cyan}{Trapezoid rule :}\\
+\ \\
+\textcolor{cyan}{Idea:} Take area of trapezoids!! \\ 
+\ \\
+
+\begin{align*}
+\mathcal{I}(x)= \int^{b}_{a}f(x)ds\approx h[\frac{1}{2}f(a) + f(x_1^{\ast}) + \hdots + f(x_{n-1}^{\ast}) + \frac{1}{2}f(b)]
+\end{align*}
+
+Here the area of a trapezoid is used:\\
+\ \\
+\begin{align*}
+\mathcal{A}^{i}_{trap} = \frac{1}{2}[f(x_{i-1}) + f(x_{i})]h
+\end{align*} 
+
+This is the area of the ith trapezoid used to approximate the integral. What's different, what's the same? 
+\end{frame}
+%%%%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+%%
+%%%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+\begin{frame}
+\frametitle{Homework 4}
+
+We want to make a function that computes trapezoid and rectangle rule! There should be \textcolor{cyan}{two functions} (one for each method) and they should: 
+
+\begin{itemize}
+\item Take in a function f for the integrand. 
+\item Take in the bounds and step size: a, b, and h. 
+\end{itemize}
+
+Now that you have these methods, you need to test them a few different ways, have a \textcolor{cyan}{separate script} produce:
+
+\begin{itemize}
+\item A figure which graphs the error as a function of step-size (h), for each method. Just choose an integrand (f(x)) that you know the answer to, like $f(x)=x$. Then evaluate this over an interval and compute the error between the actual value and the approximate value. 
+\item A figure which plots the difference between Rectangle rule and Trapezoid rule as a function of step size h. 
+\end{itemize}
+
+\end{frame}
+%%%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+%
+%\begin{frame}
+%\frametitle{Homework 3} 
+%items to do: 
+%
+%\begin{itemize}
+%\item Alter the functions I gave you so that they represent the lorenz equations.
+%\item Make a script which plots the strange attractor: plot(x,z) on the same graph. 
+%\item Have this script also plot x, y, z, over the time domain, in the same figure (using subplots) 
+%\item Have it make a graph of x for one set of initial conditions = [$x_0 y_0 z_0$] Then on the same figure a plot with these initial conditions: 
+%[$(x_0+0.1) (y_0+ 0.1) (z_0 + 0.1)$]. 
+%
+%\textcolor{cyan}{Note:} Be sure to keep all parameter values greater than zero, other than that you can choose them as you like. Some are more interesting than others...
+%\end{itemize}
+%\end{frame}
+%
+%
+\end{document}

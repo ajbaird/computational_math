@@ -1,0 +1,314 @@
+\documentclass{beamer}
+
+\renewcommand\sfdefault{phv}
+\renewcommand\familydefault{\sfdefault}
+\usetheme{default}
+\usepackage{color}
+\useoutertheme{default}
+\usepackage{texnansi}
+\usepackage{color}
+\usepackage{marvosym}
+\definecolor{bottomcolour}{rgb}{0.32,0.3,0.38}
+\definecolor{middlecolour}{rgb}{0.08,0.08,0.16}
+\setbeamerfont{title}{size=\Huge}
+\setbeamercolor{structure}{fg=gray}
+\setbeamertemplate{frametitle}[default]%[center]
+\setbeamercolor{normal text}{bg=black, fg=white}
+\setbeamertemplate{background canvas}[vertical shading]
+[bottom=bottomcolour, middle=middlecolour, top=black]
+\setbeamertemplate{items}[circle]
+\setbeamerfont{frametitle}{size=\huge}
+\setbeamertemplate{navigation symbols}{} %no nav symbols
+
+
+\usepackage{amsmath,  amsfonts, amsthm, graphicx, subfigure}
+%\usepackage{biblatex}
+ \usepackage{fancybox, ulem}
+ \usepackage{mathtools}
+ \usepackage{tabularx}
+ \usepackage{tikz}
+ \usepackage{movie15}
+ %\bibliography{pumping_paper}
+\newcommand{\p}{\partial}
+\newcommand{\f}{\frac}
+\newcommand{\B}{\textbf}
+\newcommand{\I}{\textit}
+\newcommand{\tab}{\hspace{10mm}}
+
+ % \usetheme{Singapore}
+% \usetheme{Warsaw}
+  \setbeamertemplate{navigation symbols}{}
+\title{ Matlab Notes Part 2}
+\author{Austin Baird\\UNC Department of Mathematics\\UNC Department of Biology}
+\date{\today} 
+
+\begin{document}
+\frame{\titlepage}
+
+\begin{frame}
+\frametitle{Summary}
+\begin{itemize}
+
+\item Last week we learned: 
+\begin{itemize}
+\item How to do basic arithmetic
+\item plotting 
+\item Discretizing the real line
+\item writing our first function 
+\item outputting text to the screen 
+\item (HW) Plotting multiple items on the same figure
+\end{itemize}
+\item Today we will: 
+\begin{itemize}
+\item Learn control sequences
+\item How to use built in matlab functions
+\item More plotting! 
+\item How to create your own function in matlab
+\end{itemize}
+\end{itemize}
+
+\end{frame}
+
+%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+\begin{frame}
+\frametitle{Control Sequences} 
+
+\begin{itemize}
+\item If we want to automate a task these tools are how we do it! 
+\item (for, while, if) are the words used to describe the different types of control we have over a given sequence of commands. 
+\item In general a for loop is executed as follows: 
+\end{itemize}
+
+for (conditionals, generally a sequence of numbers), \\
+\ \\
+
+
+	\hspace{10mm} body to be executed \\
+	\ \\
+	
+end
+\end{frame}
+%
+%%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+\begin{frame}
+\frametitle{Examples}
+
+Here is pseudo code which counts! \\
+\ \\
+i=0
+\ \\
+for i<10, \\
+
+\hspace{10mm} print i \\
+\hspace{10mm} i = i+1 \\
+
+end
+\ \\
+\ \\
+What does this do? Now try it! 
+\end{frame}
+
+
+%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+\begin{frame}
+\frametitle{Nested for loops} 
+
+Say we are given a matrix and we want to step through the values. Given: mxn matrix A : \\
+\ \\
+for i = 1: m,\\
+\tab for j = 1:n, \\
+\tab \tab disp(A(i,j))\\
+\tab end\\
+end\\
+\ \\
+This will print out each row of the matrix A, how do we print out the columns? 
+
+\end{frame}
+%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+
+\begin{frame}
+\frametitle{Examples of other types } 
+
+If statements only execute the body ``if'' a certain criteria is met: 
+
+\ \\
+i=0\\
+\ \\
+for i<10,\\
+\tab if i==2,\\
+\tab \tab print i \\
+\tab end \\
+
+\tab i = i+1 \\
+\ \\
+end
+
+\ \\
+\ \\
+See what this does, if statements can have a wide variety of conditionals, use your imagination! 
+
+
+
+\end{frame}
+%%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+
+\begin{frame}
+\frametitle{Using ``While'' loops}
+
+I would say that while loops are most useful in scientific computing to execute the body till a certain criteria is met:\\
+\ \\
+\ \\
+while err > 0.1, \\
+\ \\
+\tab Execute root finding algorithm\\
+\tab Need expression for error here\\
+\ \\
+end 
+
+Lets try and use a while loop to make a root finding algorithm!
+\end{frame}
+%%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+%
+\begin{frame}
+\frametitle{Functions in Matlab} 
+
+There are two ways to define functions in matlab: 
+\begin{itemize}
+\item ``anonymous'' functions (which can be used to define analytical functions in scripts) 
+\item High level functions which require their own script. 
+\end{itemize}
+ ``anonymous'' functions: 
+
+\tab \tab f = @(arglist)expression\\
+
+Example: 
+
+\tab \tab y = @(x) $x^2$ \\
+
+This produces a function (y) which takes in a domain (x) and outputs $x^2$ to the variable y. \\
+Make sense? Best if we try it out! 
+
+
+\end{frame} 
+%
+%
+%%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+\begin{frame}
+\frametitle{Functions}
+There are programs which can take a given number of inputs and output what you want them to (very useful). \\
+You must ``feed'' it all the inputs you want it to compute with because any outside variables will not be passed into it: \\
+\ \\
+$function[outputs] = function name(inputs)$\\
+\ \\
+\tab Body to be executed \\
+\ \\
+end\\
+\ \\
+\ \\
+
+Note that functions can have multiple functions in the same script and can use all of the self contained programs! 
+
+\end{frame}
+
+
+
+
+
+%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+\begin{frame}
+\frametitle{Let's Try it} 
+
+Create a function which takes a number, n as its input and counts up to n. 
+\ \\
+\ \\
+\pause
+function[] = function\_count(n)\\
+\ \\
+\tab for i = 1:n, \\
+\tab \tab disp(i) \\
+\tab end\\
+\ \\
+end
+
+We can use this function by making sure we are in the same directory as it (current folder in Matlab). \\
+then creating a number $n = 10$ on the command line \\
+typing function\_count(n)
+
+\end{frame}
+
+%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+\begin{frame}
+\frametitle{Euler's Method}
+We want to write a function to solve (approximate) the solution to: \\
+
+\begin{align*}
+{y}^{\prime}(x) &= f(x,y)\\
+y_0 &= y(x_0)
+\end{align*}
+
+Given an initial point of the solution curve $(x_0, y_0)$ and a step size $h=dx$ we can approximate the solution to this equation at $x_0, x_1 = x_0 + h, x_2 = x_0 + 2h ...$. 
+
+\begin{align*}
+y_1 &= y_0 + hf(x_0,y_0)\\
+y_2 &= y_1 + hf(x_1,y_1)...
+\end{align*}
+\end{frame}
+%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+\begin{frame}
+\frametitle{Planning to write a function} 
+
+What items do we need to create a function which will approximate this ODE  using Eulers Method? 
+
+\begin{itemize}
+\item Step size h
+\item initial value $(x_0,y_0)$
+\item The right hand side of the equation: $f(x,y)$
+\item A discretized domain, $x$
+\item An array which is size(x) to store the approximate values of our function
+\end{itemize}
+
+Then the question to ask is if I were to make a function which of these would I want to input into the function? (up to you!)
+
+\begin{itemize}
+\item Step size h 
+\item initial value $(x_0,y_0)$
+\item The right hand side of the domain, $f(x,y)$
+\item (maybe) discretized domain and empty array?
+\end{itemize}
+
+\end{frame}
+
+%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+\begin{frame}
+\frametitle{Homework 2}
+
+ 1) Make a function which uses Euler's method to approximate a given ODE: 
+\begin{align*}
+y^{\prime}(x) = f(x,y)
+\end{align*}
+
+It MUST:
+\begin{itemize}
+\item It must take in at least three variables. 
+\item To be handed in with the code (separate document):
+
+\begin{itemize}
+\item print out the maximum error between the approximate solution and the actual solution (ex: make $ f(x,y)=y$, then you have an actual solution 
+\item A graph of the error as a function of step size, h
+\item graph the actual solution and the approximate solution over a given domain (ex x=[0,2]) 
+\end{itemize}
+\end{itemize}
+
+2) Make a function which takes in a matrix and outputs its upper triangular form (use nested for loops, not built in matlab functions)
+\end{frame}
+%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+
+\begin{frame}
+\frametitle{Homework 2} 
+
+Also read chapter 5 of the Matlab book. It will help a lot with the homework. Also the wikipedia article on Eulers method can be helpful... 
+
+\end{frame}
+
+
+\end{document}

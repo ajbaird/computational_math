@@ -1,0 +1,17 @@
+\frametitle {Connecting Numerical Results to Reality}
+
+We have an idea of how the origin behaves, now lets graph a phase plane diagram of the solution.
+\ \\
+To do this in matlab: Use a \textcolor{red}{mesh grid} and the \textcolor{red}{quiver} function: \\
+
+\begin{Verbatim}
+
+[x,y] = meshgrid(-2:.5:15,-2.5:.25:2.5);
+u = y;
+v = -k*sin(x);
+quiver(x,y,u,v,'r');
+\end{Verbatim}
+
+This will bring out the slopes at each point in the mesh grid.\\
+\ \\
+\textcolor{red}{What does this physically correspond to?}

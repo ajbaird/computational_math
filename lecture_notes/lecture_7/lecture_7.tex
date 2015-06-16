@@ -1,0 +1,343 @@
+\documentclass{beamer}
+
+\renewcommand\sfdefault{phv}
+\renewcommand\familydefault{\sfdefault}
+\usetheme{default}
+\usepackage{color}
+\useoutertheme{default}
+\usepackage{texnansi}
+\usepackage{color}
+\usepackage{marvosym}
+\definecolor{bottomcolour}{rgb}{0.32,0.3,0.38}
+\definecolor{middlecolour}{rgb}{0.08,0.08,0.16}
+\setbeamerfont{title}{size=\Huge}
+\setbeamercolor{structure}{fg=gray}
+\setbeamertemplate{frametitle}[default]%[center]
+\setbeamercolor{normal text}{bg=black, fg=white}
+\setbeamertemplate{background canvas}[vertical shading]
+[bottom=bottomcolour, middle=middlecolour, top=black]
+\setbeamertemplate{items}[circle]
+\setbeamerfont{frametitle}{size=\huge}
+\setbeamertemplate{navigation symbols}{} %no nav symbols
+
+
+\usepackage{amsmath,  amsfonts, amsthm, graphicx, subfigure}
+%\usepackage{biblatex}
+ \usepackage{fancybox, ulem}
+ \usepackage{mathtools}
+ \usepackage{tabularx}
+ \usepackage{tikz}
+ \usepackage{movie15}
+ %\bibliography{pumping_paper}
+\newcommand{\p}{\partial}
+\newcommand{\f}{\frac}
+\newcommand{\B}{\textbf}
+\newcommand{\I}{\textit}
+\newcommand{\tab}{\hspace{10mm}}
+
+ % \usetheme{Singapore}
+% \usetheme{Warsaw}
+  \setbeamertemplate{navigation symbols}{}
+\title{Lecture 7}
+\author{Austin Baird\\UNC Department of Mathematics\\UNC Department of Biology}
+\date{\today} 
+
+\begin{document}
+\frame{\titlepage}
+
+\begin{frame}
+\frametitle{Summary}
+\begin{itemize}
+
+\item Last week we learned: 
+\begin{itemize}
+\item Local truncation error.
+\item Second Order v first order method.
+\item Error analysis. 
+\item Global error. 
+\end{itemize}
+\item Today we will: 
+\begin{itemize}
+\item Stability analysis.
+\item Equilibrium solution to ODEs. 
+\item Eigen values and eigenvectors.
+\end{itemize}
+\end{itemize}
+
+\end{frame}
+
+%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+\begin{frame}
+\frametitle{Introduction}
+
+We want to understand what an eigenvalue is and how it affects the behavior of our ODE and also the behavior of our numerical techniques. \\
+An \textcolor{cyan}{eigenvalue} $\lambda$  and corresponding \textcolor{cyan}{eigenvector} \textbf{$\hat{v}$} are defined to to have the relation: 
+
+\begin{align*}
+A\hat{v} = \lambda\hat{v}
+\end{align*}
+
+For a linear operator $A$. We can also extend this to our differential operators and get the following relation: 
+
+\begin{align*}
+\frac{dy}{dt}& = \lambda y(t)\\
+y(0) &= y_0
+\end{align*}
+
+\end{frame}
+
+
+%%%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+\begin{frame}
+\frametitle{Stability and Eigenvalues}
+
+Consider the ODE we just introduced, its simple to see the solution to be: 
+
+\begin{align*}
+y(t) = y_0e^{\lambda t}
+\end{align*}
+
+Seeing this solution we can begin to consider the idea of \textcolor{cyan}{stability}: \\
+
+A solution to the initial value ODE  is considered \textcolor{cyan}{stable} if small perturbations to the initial value do not change solution trajectories as $\lim t \rightarrow \infty$. \\ 
+\ \\
+Now that we know the solution to this toy problem we can perturb the initial condition: $ y_0 = y_0 + \delta y_0$. 
+
+
+\end{frame}
+
+
+%%%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+%%%%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+
+\begin{frame}
+\frametitle{Continued} 
+
+We can now plug in this new initial condition to the solution: 
+
+\begin{align*}
+y(t) = (y_0+\delta y_0)e^{\lambda t}
+\end{align*}
+
+\textcolor{cyan}{Do It!} Use Matlab to show that as time is taken to be greater and greater the initial condition and the perturbed solution diverge.\\
+\ \\
+It becomes clear that as $\lim t \rightarrow \infty$ this solution becomes infinitely different from the original solution (the speed of change is dependent upon $\delta y_0$). \\
+We can then require the following for this model problem (for a stable bounded solution): 
+\begin{align*}
+Re(\lambda) < 0
+\end{align*}
+
+Why just the real portion? 
+ 
+\end{frame}
+%%%%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+
+\begin{frame}
+\frametitle{What does this mean for our numerical solvers?} 
+
+We now want to extend this analysis to our numerical solvers. \\
+
+Forward Euler:
+\begin{align*}
+y_{n+1} = y_n + \Delta t f(t_n,y_n)
+\end{align*}
+\ \\
+
+Plug in our model problem: 
+
+\begin{align*}
+y_{n+1} &= y_n + \lambda\Delta t y_n\\
+\hdots\\
+y_{n+1} &= (1+\lambda\Delta t)y_n\\
+\hdots\\
+y_{n+1} &= (1+\lambda\Delta t)^n y_0
+\end{align*}
+
+\end{frame}
+
+%%%%%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+
+
+\begin{frame}
+\frametitle{Numerical Stability}
+
+We can now define the idea of numerical stability for our model problem: \\
+\ \\
+\textit{Def:}An initial value problem is \textcolor{cyan}{Stable} if small perturbations in initial conditions do not cause the numerical approximation to diverge away from the true solution. Given a bounded solution.\\
+\ \\
+What does this mean for the analysis we just did? Let $\lambda < 0 $. The analytical solution is bounded, but the numerical solution can still be unbounded (depending upon $h=\Delta t$), so we require: 
+\begin{align*}
+|1+\lambda\Delta t| \leq 1\\
+\hdots\\
+-1\leq (1+\lambda\Delta t) \leq 1\\
+\hdots\\
+h<\frac{-2}{\lambda}
+\end{align*}
+
+\end{frame}
+%%%%%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+%%%
+%%%%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+\begin{frame}
+\frametitle{Numerical Stability}
+
+In the previous slide we were able to find a necessary condition for convergence of our numerical solution. \\
+\ \\
+\textit{Try It!} Take the forward Euler solver that you have programed (or the solution one) and experiment with the error for different h,$\lambda$, and $t_{final}$. Use the above formula to get a step size that garentees convergence.
+\begin{align*} 
+\lambda &= -100\\
+h &< \frac{-2}{-100}\\
+h &= 0.02
+\end{align*}
+
+This shows that the time step needs to be taken quite small as $\lim t \rightarrow \infty$. This analysis can be extended to other methods, including rk2!
+\end{frame}
+%%%%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+
+\begin{frame}
+\frametitle{Equilibrium Points} 
+
+Equilibrium points of an ODE are $y^*$ that satisfy the relation: 
+
+\begin{align*}
+\frac{dy^{*}}{dt} = {F}(y^{*}) = 0
+\end{align*}
+
+Basically, it is a point in which as time progresses no more change is occurring. Ex (logistic equation, a population model with a carrying capacity, $\mathcal{K}$):
+
+\begin{align*}
+\frac{dy}{dt} = ry(1-\frac{y}{\mathcal{K}})
+\end{align*}
+
+Find the equilibrium points of this solution by hand, then test yourself using matlab. Test different initial conditions and determine stability of points.
+\end{frame}
+
+
+%%%%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+\begin{frame}
+\frametitle{Eigenvalues and Systems of ODEs} 
+
+For our model problem $\lambda$ is the eigenvalue of the equation and we were able to see some relations which made solutions bounded. Turns out eigenvalues can tell us a lot about the long term behavior of a system of ODEs (linear and non-linear). Consider the system: 
+
+\begin{align*}
+\frac{dy_1(t)}{dt} = ay_1 + by_2\\
+\frac{dy_2(t)}{dt} = cy_1 + dy_2\\
+\end{align*}
+
+Write this as a matrix equation! 
+
+\end{frame}
+
+%%%%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+\begin{frame}
+\frametitle{Eigenvalues and Systems of ODEs} 
+Once we have a matrix equation of the form: \\
+\begin{align*}
+\left(\begin{matrix}
+\frac{dy_1(t)}{dt}\\
+\frac{dy_2(t)}{dt}
+\end{matrix} \right)
+=
+\left(\begin{matrix}
+a & b \\
+c & d \\
+\end{matrix}\right)
+\left(\begin{matrix}
+y_1\\
+y_2
+\end{matrix}\right)
+\end{align*}
+
+We can solve for the eigenvalues $\lambda_1,\lambda_2$  and eigenvectors $\hat{b_1},\hat{b_2}$ of $\mathcal{A}$ (the 2x2 matrix). This will give us the solution of the form: 
+\begin{align*}
+\hat{y(t)} = c_1e^{\lambda_1 t}\hat{b_1} + c_2 e^{\lambda_2 t}\hat{b_2}
+\end{align*}
+
+We want to use matlab to do this, since these systems can get quite large! \\
+
+ $\gg$ [eigvec, eigenval] = eig($\mathcal{A})$\\
+\ \\
+Now see what this does for a given $\mathcal{A}$! Also, what can we say about the solutions for given $\lambda_1,\lambda_2$? 
+
+\end{frame}
+%%%%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+\begin{frame}
+\frametitle{Revisiting Stability} 
+
+We want to say something qualitative about the solution trajectories (plotting $y_1$ v. $y_2$ for a given initial value) given the eigenvalues $ \lambda_1,\lambda_2$.\\
+\ \\
+\begin{itemize}
+\item \textcolor{cyan}{Asymptotic Stability}: Solutions $y(t) \rightarrow 0$ as $ t\rightarrow \infty$. Satisfied when: Re($\lambda$) $< 0$. Negative real part eigenvalues.
+\item \textcolor{cyan}{Stability}: Solutions $y(t)$ stay bounded as $ t \rightarrow \infty $. Only imaginary eigenvalues. 
+\item \textcolor{cyan}{Unstable}: Solutions $y(t) \rightarrow \infty$ as $ t\rightarrow \infty$.  Re($\lambda$) > 0. Real part of the eigenvalues greater than zero.
+\end{itemize}
+
+This gives us a good overview of how linear ODEs will behave depending on their eigenvalues. 
+\end{frame}
+
+%%%%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+\begin{frame}
+\frametitle{Plotting Trajectories Matlab}
+
+To complete this next homework we need to know how to plot trajectories of our ODEs to see their behavior. We did this once with the Lorenz attractor system. We now want to add many trajectories to the same graph: 
+
+\begin{itemize}
+\item start a figure and hold at the begging of the script: 
+\item $\gg$ figure(1)
+\item $\gg$ hold on 
+\item $ \gg$ for i = 0:1:10,
+\item $\gg$ initial = [i+3 (i-2)/3]
+\item $\gg$ solve your system with ode45 
+\item $\gg$ plot((y:,1),y(:,2))
+\item $\gg$ end 
+\item $\gg$ hold off 
+\end{itemize}
+
+\end{frame}
+
+
+
+%%%%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+\begin{frame}
+\frametitle{Homework6}
+
+We want to investigate different system of ODEs of the form: 
+\begin{align*}
+\left(\begin{matrix}
+\frac{dy_1(t)}{dt}\\
+\frac{dy_2(t)}{dt}
+\end{matrix} \right)
+=
+\left(\begin{matrix}
+a & b \\
+c & d \\
+\end{matrix}\right)
+\left(\begin{matrix}
+y_1\\
+y_2
+\end{matrix}\right)
+\end{align*}
+for various a,b,c,d's:\\
+\ \\
+a=2, b=-5, c=1, d=-2  \\
+\ \\
+and\\
+\ \\
+a=0.5, b=0.9, c=-1.2, d=-1.7 
+
+
+\end{frame} 
+
+%%%%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+\begin{frame}
+\frametitle{Homework6}
+\begin{itemize}
+\item Print out the eigen values for each system presented on the previous page. 
+\item Print out how you'd expect the system to behave given the eigen values. 
+\item Plot the exact solution for the system (using eigenvalues and eigenvectors) from t=[0,10].
+\item For each example, plot out the trajectory for at least ten different initial values on the same graph. 
+\end{itemize}
+\end{frame}
+
+%%
+\end{document}

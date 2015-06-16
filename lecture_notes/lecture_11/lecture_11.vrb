@@ -1,0 +1,14 @@
+\frametitle {Frequency}
+To get the frequency spectrum of the data you are analyzing, do the following (in Matlab) :
+\ \\
+\begin{verbatim}
+Fs = 150;    sampling frequency
+t = 0:1/Fs:1;    discretized time domain
+f = 5;    frequency of our sin wave
+y = sin(2*pi*f*t);
+nfft = 1024;    length of the fft domain, power of 2
+x = fft(y,nfft);
+x = abs(x(1:nfft/2)); Half of the data, fft is symmetric
+f = (0:nfft/2-1)*Fs/nfft;    frequency vector
+\end{verbatim}
+

@@ -1,0 +1,215 @@
+\documentclass{beamer}
+
+\renewcommand\sfdefault{phv}
+\renewcommand\familydefault{\sfdefault}
+\usetheme{default}
+\usepackage{color}
+\useoutertheme{default}
+\usepackage{texnansi}
+\usepackage{color}
+\usepackage{marvosym}
+\definecolor{bottomcolour}{rgb}{0.32,0.3,0.38}
+\definecolor{middlecolour}{rgb}{0.08,0.08,0.16}
+\setbeamerfont{title}{size=\Huge}
+\setbeamercolor{structure}{fg=gray}
+\setbeamertemplate{frametitle}[default]%[center]
+\setbeamercolor{normal text}{bg=black, fg=white}
+\setbeamertemplate{background canvas}[vertical shading]
+[bottom=bottomcolour, middle=middlecolour, top=black]
+\setbeamertemplate{items}[circle]
+\setbeamerfont{frametitle}{size=\huge}
+\setbeamertemplate{navigation symbols}{} %no nav symbols
+
+
+\usepackage{amsmath,  amsfonts, amsthm, graphicx, subfigure}
+%\usepackage{biblatex}
+ \usepackage{fancybox, ulem}
+ \usepackage{mathtools}
+ \usepackage{tabularx}
+ \usepackage{tikz}
+ \usepackage{movie15}
+ %\bibliography{pumping_paper}
+\newcommand{\p}{\partial}
+\newcommand{\f}{\frac}
+\newcommand{\B}{\textbf}
+\newcommand{\I}{\textit}
+\newcommand{\tab}{\hspace{10mm}}
+
+ % \usetheme{Singapore}
+% \usetheme{Warsaw}
+  \setbeamertemplate{navigation symbols}{}
+\title{Lecture 5}
+\author{Austin Baird\\UNC Department of Mathematics\\UNC Department of Biology}
+\date{\today} 
+
+\begin{document}
+\frame{\titlepage}
+
+\begin{frame}
+\frametitle{Summary}
+\begin{itemize}
+
+\item Last week we learned: 
+\begin{itemize}
+\item Runge Kutta.  
+\item Second Order v first order method.
+\item log log plots.
+\end{itemize}
+\item Today we will: 
+\begin{itemize}
+\item Error analysis.
+\begin{itemize}
+\item Local truncation error.
+\item Global error.
+\end{itemize}
+\item Stability analysis.
+\end{itemize}
+\end{itemize}
+
+\end{frame}
+
+%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+\begin{frame}
+\frametitle{Introduction}
+
+We want to be able to evaluate the error involved in approximating equations of the form: 
+
+\begin{align*}
+\frac{dy}{dt} &= f(t,y)\\
+y(t_0) &= y_0
+\end{align*}
+
+\ \\
+
+Here $t_0$ is initial time, and $y_0$ is the initial value. How do we analyze our results? 
+\end{frame}
+
+
+%%%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+\begin{frame}
+\frametitle{Approximation with Taylor Series}
+
+We want to approximate $y(t+\Delta t)$ using talyor series. We don't know the solution to the ODE but this will give us insight into our approximation.
+
+\begin{align*}
+y(t+\Delta t) &= y(t) + \Delta t \dot{y}(t) +\ldots \Delta t^n y^{(n)}(\tau)\\
+t \leq \tau \leq t + \Delta t 
+\end{align*}
+
+This is the truncated Taylor series for the function $y(t+\Delta t)$. Note: all of this is analytical and continuous. 
+
+\end{frame}
+
+
+%%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+\begin{frame}
+\frametitle{Continued}
+
+Now we want to use the taylor series to solve for $\'{y}(t)$ 
+
+\begin{align*}
+\dot{y}(t) = \frac{y(t+\Delta t) - y(t)}{\Delta t} + \mathcal{O}(\Delta t)
+\end{align*}
+
+Note that there is equality here and that all this is continuous. Now we plug this into our ODE equation and solve for $y(t+\Delta t)$.
+\begin{align*} 
+y(t+ \Delta t) = y(t) + \Delta t f(t,y(t)) + \mathcal{O}(\Delta t) 
+\end{align*}
+
+\end{frame}
+%%%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+
+\begin{frame}
+\frametitle{Local Truncation Error} 
+
+We can now take a difference of the actual solution and our approximation and it becomes clear to see: 
+
+\begin{align*}
+\frac{y(t+\Delta t) - y(t)}{\Delta t}  - f(t,y(t)) = \mathcal{O}(\Delta t)
+\end{align*}
+
+We can now say that at time $t_{n+1}$ our exact solution to our equation can be written as: 
+\begin{align*}
+y(t_{n+1}) = y(t_n) + \Delta t f(t_n,y(t_n)) + \Delta t LTE 
+\end{align*}
+
+ 
+\end{frame}
+%%%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+
+\begin{frame}
+\frametitle{Compare to Numerical Approximation} 
+
+We now want to compare this to Euler method (now for the first time we are discussing numerical approximations: $ y(t_n) \approx y_{n}$ 
+
+Recall: 
+\begin{align*}
+y_{n+1} = y_n + \Delta t f(t_n,y_n)
+\end{align*}
+\ \\
+\textcolor{cyan}{Note:} $ y(t_n) \approx y_{n}$. We can now try and evaluate (global error): 
+
+\begin{align*}
+| y(t_{n+1} - y_{n+t} | &=  | y(t_n) - y_n + \Delta t (f(t_n,y(t_n)) - f(t_n,y_n)) + \Delta t LTE \\
+&\leq | y(t_n) - y_n | + \Delta t | f(t_n,y(t_n)) - f(t_n,y_n) | + \Delta t LTE \\
+&\leq | y(t_n) - y_n | +\Delta t \mathcal{L} | y(t_n) - y_n | + \Delta t LET 
+\end{align*}
+
+\end{frame}
+
+%%%%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+
+
+\begin{frame}
+\frametitle{Expression for Global Error}
+
+We can now define an expression for global error: \\
+\ \\
+$e_n = | y(t_n) - y_n |$
+\ \\
+\begin{align*}
+e_{n+1} &= e_n(1+\Delta t \mathcal{L}) + \Delta t LET	 \\
+& = e^{\mathcal{L} T } ( \frac{\mathcal{M}}{s\mathcal{L}}\Delta t) = \mathcal{O}(\Delta t)
+\end{align*}
+
+This means that forward Euler is a first order global method! But what does this say about the local error? 
+\end{frame}
+%%%%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+%%
+%%%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+\begin{frame}
+\frametitle{Local Truncation Error}
+
+We can evaluate the error generated by our method in one step as follows, take the difference: 
+
+\begin{align*} 
+| y_1 - y(t+\Delta t) | &= ? \\
+&= | y_0 + \Delta t f(t_0,y_0) - (y(t_0) + \Delta t \'{y}(t_0) + \mathcal{O}(\Delta t^2)\\
+&= \mathcal{O}(\Delta t ^ 2)
+\end{align*}
+
+
+Locally the error is second order, but then what am I defining in my example code as error? 
+\end{frame}
+%%%--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------%
+
+\begin{frame}
+\frametitle{Norms} 
+
+A norm is a function, $f$ which acts on a vector space $\mathcal{V}$ and has the following properties: For $\textbf{u,v} \epsilon \mathcal{V} $
+
+\begin{align*}
+f(a \textbf{u}) &= |a| f(\textbf{u)}\\
+f(\textbf{u} + \textbf{v}) &\leq f(\textbf{u}) + f(\textbf{v})\\
+f(\textbf{v}) &= 0 \rightarrow \textbf{v} = 0
+\end{align*}
+
+Now what I'm having you do is the \textcolor{cyan}{Infinity Norm}:
+\begin{align*}
+\parallel \textbf{x}\parallel_{inf} = max(|x_1|,|x_2|, \ldots, |x_n|)
+\end{align*}
+
+\end{frame}
+
+%
+\end{document}
